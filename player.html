@@ -335,48 +335,21 @@
                             window.parent.postMessage({ type: 'rive-loaded' }, '*');
                         } catch (e) {}
 
-                        // Initialize View Model for data binding
-                        try {
-                            let vm = null;
-
-                            if (typeof r.defaultViewModel === 'function') {
-                                vm = r.defaultViewModel();
-                                console.log('📊 Got default ViewModel');
-                            }
-
-                            if (vm && typeof vm.defaultInstance === 'function') {
-                                const instance = vm.defaultInstance();
-                                console.log('📊 Got instance:', instance);
-
-                                if (instance) {
-                                    const riveMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(r));
-                                    const bindMethods = riveMethods.filter(m =>
-                                        m.toLowerCase().includes('viewmodel') ||
-                                        m.toLowerCase().includes('data') ||
-                                        m.toLowerCase().includes('instance') ||
-                                        m.toLowerCase().includes('bind')
-                                    );
-                                    console.log('📊 Rive binding methods:', bindMethods);
-
-                                    if (typeof r.setViewModelInstance === 'function') {
-                                        r.setViewModelInstance(instance);
-                                        console.log('📊 Bound via setViewModelInstance');
-                                    } else if (typeof r.bindViewModelInstance === 'function') {
-                                        r.bindViewModelInstance(instance);
-                                        console.log('📊 Bound via bindViewModelInstance');
-                                    } else if (typeof r.setDataContext === 'function') {
-                                        r.setDataContext(instance);
-                                        console.log('📊 Bound via setDataContext');
-                                    } else {
-                                        console.log('📊 No binding method found, trying direct assignment');
-                                    }
-                                }
-                            } else {
-                                console.log('📊 No ViewModel or defaultInstance available');
-                            }
-                        } catch (vmError) {
-                            console.error('📊 View Model error:', vmError);
-                        }
+                       // Initialize View Model for data binding
+try {
+    const vm = r.defaultViewModel();
+    if (vm) {
+        const instance = vm.defaultInstance();
+        if (instance && typeof r.setViewModelInstance === 'function') {
+            r.setViewModelInstance(instance);
+            console.log('📊 ViewModel bound successfully');
+        } else {
+            console.log('📊 Could not bind ViewModel');
+        }
+    }
+} catch (vmError) {
+    console.error('📊 View Model initialization error:', vmError);
+}
                     },
                     onLoadError: (e) => {
                         console.error('❌ onLoadError:', e);
